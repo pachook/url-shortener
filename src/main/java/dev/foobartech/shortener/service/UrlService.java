@@ -61,24 +61,18 @@ public class UrlService {
 
     public void deleteShortUrl(String id) {
         shortUrlRepository.deleteById(id);
-        logDeletionInfo(id);
+        log.info("Deleted short url: {}", id);
     }
 
-//    @Scheduled(fixedRate=60*60*1000) //every hour
-    @Scheduled(fixedRate=1000) //every hour
+    @Scheduled(fixedRate=60*60*1000) //every hour
     public void removeExpiredEntries() {
         LocalDateTime now = LocalDateTime.now();
         shortUrlRepository.findAllByTtlNotNull().forEach(shortUrl -> {
             if (shortUrl.getCreatedAt().plusSeconds(shortUrl.getTtl()).isBefore(now)) {
-                shortUrlRepository.delete(shortUrl);
-                logDeletionInfo(shortUrl.getId());
+                deleteShortUrl(shortUrl.getId());
             }
         });
 
-    }
-
-    private static void logDeletionInfo(String shortUrl) {
-        log.info("Deleted short url: {}", shortUrl);
     }
 
     private String generateUniqueId() {
