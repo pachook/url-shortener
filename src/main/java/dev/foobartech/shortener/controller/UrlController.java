@@ -4,8 +4,8 @@ package dev.foobartech.shortener.controller;
 import dev.foobartech.shortener.exception.IdAlreadyInUseException;
 import dev.foobartech.shortener.model.dto.UrlRequest;
 import dev.foobartech.shortener.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,8 @@ public class UrlController {
         this.urlService = urlService;
     }
 
+    @Operation(summary = "Gets original url for provided short url",
+            description = "Returns 404 in case of missing short url")
     @GetMapping("{id}")
     public ResponseEntity<Void> redirectUrl(@PathVariable String id) {
         String originalUrl = urlService.getOriginalUrl(id);
@@ -38,6 +40,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @Operation(summary = "Deletes short url's entry")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteUrl(@PathVariable String id) {
         urlService.deleteShortUrl(id);
@@ -45,7 +48,8 @@ public class UrlController {
     }
 
 
-
+    @Operation(summary = "Creates short url's entry",
+            description = "TTL and CustomId fields are optional. Returns shortId")
     @PostMapping("shorten")
     public ResponseEntity<String> shortenUrl(@RequestBody UrlRequest request) {
         try {
@@ -57,6 +61,4 @@ public class UrlController {
         }
 
     }
-
-
 }

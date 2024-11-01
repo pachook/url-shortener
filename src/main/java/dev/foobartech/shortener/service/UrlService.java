@@ -37,6 +37,7 @@ public class UrlService {
                 return shortUrl.getOriginalUrl();
             }
         }
+        log.warn("Attempt to access expired or non-existent URL with ID: {}", id);
         return null;
     }
 
@@ -53,7 +54,7 @@ public class UrlService {
                 .ttl(request.getTtl())
                 .createdAt(LocalDateTime.now())
                 .build();
-        log.info("Created short url: {}", shortUrl);
+        log.info("Created short url: {}", shortUrl.getId());
         shortUrlRepository.save(shortUrl);
 
         return id;
